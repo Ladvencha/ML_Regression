@@ -1,7 +1,7 @@
 # %%
 from CCKNN.predict import Predicter
 
-predicter = Predicter('./train.csv', True)
+predicter = Predicter('./LR/CASP.csv', True)
 predicter.pred()
 
 # %%
