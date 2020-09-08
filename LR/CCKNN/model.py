@@ -6,6 +6,8 @@ from numpy.linalg import linalg
 from sklearn.linear_model import LinearRegression
 import time
 import datetime as dt
+import multiprocessing as mp
+from multiprocessing import Process, Pool
 
 class Model(IModel):
     def __init__(self):
@@ -22,6 +24,10 @@ class Model(IModel):
     '''
     def get_model(self):
         return self.model
+
+    def cal_mat(self, mat1, mat2):
+        result = mat1 * mat2
+        return result 
     
     @staticmethod
     def knn(x_train, y_train):
@@ -30,6 +36,7 @@ class Model(IModel):
         print(x_train.dtype, y_train.dtype)
         xMat = mat(x_train)
         yMat = mat(y_train).T
+        # myTime
         starTime1 = dt.datetime.now()
         xTx = xMat.T * xMat
         if linalg.det(xTx) == 0:
@@ -37,10 +44,18 @@ class Model(IModel):
             return
         ws = xTx.I * (xMat.T * yMat)
         endTime1 = dt.datetime.now()
-        print('mytime:', (endTime1 - starTime1).microseconds)
+        print('mytime: %f ms' % ((endTime1 - starTime1).microseconds / 1000))
+        # sklearnTime
         starTime2 = dt.datetime.now()
         linreg = LinearRegression()
         linreg.fit(x_train,y_train)
         endTime2 = dt.datetime.now()
-        print('sklearntime:', (endTime2 - starTime2).microseconds)
+        print('sklearntime: %f ms' % ((endTime2 - starTime2).microseconds / 1000))
+
+        # myMPtime
+        starTime3 = dt.datetime.now()
+        
+        endTime3 = dt.datetime.now()
+        print('myMPtime: %f ms' % ((endTime3 - starTime3).microseconds / 1000))
+
         return ws
