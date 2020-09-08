@@ -6,8 +6,7 @@ from numpy.linalg import linalg
 from sklearn.linear_model import LinearRegression
 import time
 import datetime as dt
-import multiprocessing as mp
-from multiprocessing import Process, Pool
+from multiprocessing import Process, Queue
 
 class Model(IModel):
     def __init__(self):
@@ -37,25 +36,18 @@ class Model(IModel):
         xMat = mat(x_train)
         yMat = mat(y_train).T
         # myTime
-        starTime1 = dt.datetime.now()
-        xTx = xMat.T * xMat
-        if linalg.det(xTx) == 0:
-            print('This matrix is singular, cannot do inverse')
-            return
-        ws = xTx.I * (xMat.T * yMat)
-        endTime1 = dt.datetime.now()
-        print('mytime: %f ms' % ((endTime1 - starTime1).microseconds / 1000))
+        # starTime1 = dt.datetime.now()
+        # xTx = xMat.T * xMat
+        # if linalg.det(xTx) == 0:
+        #     print('This matrix is singular, cannot do inverse')
+        #     return
+        # ws = xTx.I * (xMat.T * yMat)
+        # endTime1 = dt.datetime.now()
+        # print('mytime: %f ms' % ((endTime1 - starTime1).microseconds / 1000))
         # sklearnTime
         starTime2 = dt.datetime.now()
         linreg = LinearRegression()
         linreg.fit(x_train,y_train)
         endTime2 = dt.datetime.now()
         print('sklearntime: %f ms' % ((endTime2 - starTime2).microseconds / 1000))
-
-        # myMPtime
-        starTime3 = dt.datetime.now()
-        
-        endTime3 = dt.datetime.now()
-        print('myMPtime: %f ms' % ((endTime3 - starTime3).microseconds / 1000))
-
-        return ws
+        # return ws
