@@ -6,6 +6,8 @@ from numpy.linalg import linalg
 from sklearn.linear_model import LinearRegression
 import time
 import datetime as dt
+from numpy import *
+from math import exp
 
 class Model(IModel):
     def __init__(self):
@@ -24,23 +26,34 @@ class Model(IModel):
         return self.model
     
     @staticmethod
-    def knn(x_train, y_train):
-        # print(x_train.dtype, y_train.dtype)
-        y_train = y_train.astype(np.float64)
-        print(x_train.dtype, y_train.dtype)
-        xMat = mat(x_train)
-        yMat = mat(y_train).T
-        starTime1 = dt.datetime.now()
-        xTx = xMat.T * xMat
-        if linalg.det(xTx) == 0:
-            print('This matrix is singular, cannot do inverse')
-            return
-        ws = xTx.I * (xMat.T * yMat)
-        endTime1 = dt.datetime.now()
-        print('mytime:', (endTime1 - starTime1).microseconds)
+    def knn(testPoint, xArr, yArr, k=1.0):
+        yArr = yArr.astype(np.float64)
+        xMat = mat(xArr);
+        yMat = mat(yArr).T
+        testPoint = mat(testPoint)
+        m = shape(xMat)[0]
+        print(xMat.shape)
+        print(yMat.shape)
+        print(testPoint.shape)
+        print(xMat[5, :].shape)
+
+        # mytime
         starTime2 = dt.datetime.now()
-        linreg = LinearRegression()
-        linreg.fit(x_train,y_train)
+        print(starTime2)
+        weights = mat(eye((m)))
+        for j in range(m):  # next 2 lines create weights matrix
+            diffMat = testPoint - xMat[j, :]  #
+            weights[j, j] = exp(diffMat * diffMat.T / (-2.0 * k ** 2))
+        xTx = xMat.T * (weights * xMat)
+        
+        if linalg.det(xTx) == 0.0:
+            print
+            "This matrix is singular, cannot do inverse"
+            return
+        
+        ws = xTx.I * (xMat.T * (weights * yMat))
         endTime2 = dt.datetime.now()
-        print('sklearntime:', (endTime2 - starTime2).microseconds)
-        return ws
+        print(endTime2)
+        print('mytime: %f ms' % ((endTime2 - starTime2).microseconds / 1000))
+        
+        # return testPoint * ws
